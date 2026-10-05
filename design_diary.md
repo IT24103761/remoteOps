@@ -22,3 +22,16 @@ Calculated personalized values:
 I plan to use POSIX threads for the concurrency model so that multiple
 Controller clients can be served independently by the Agent.
 
+## 6 October 2026 – Basic TCP Communication
+
+Implemented and tested the initial TCP communication between the
+RemoteOps Agent and Controller.
+
+The Agent creates a TCP socket, binds to the personalized port 9410,
+listens for connections and accepts a Controller.
+
+The Controller connects to the Agent using 127.0.0.1 and port 9410.
+
+The listening socket was verified using the ss command. The Controller
+successfully sent a HELLO message and received a response containing
+SID:1673.
