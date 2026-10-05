@@ -12,7 +12,9 @@ int main(int argc, char *argv[]) {
 
     int sockfd;
     struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
+
+    char send_buffer[BUFFER_SIZE];
+    char recv_buffer[BUFFER_SIZE];
 
     if (argc != 2) {
         printf("Usage: %s <agent_ip>\n", argv[0]);
@@ -31,48 +33,71 @@ int main(int argc, char *argv[]) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
 
-    if (inet_pton(AF_INET, argv[1], &server_addr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET,
+                  argv[1],
+                  &server_addr.sin_addr) <= 0) {
+
         printf("Invalid IP address\n");
         close(sockfd);
         return 1;
     }
 
-    if (connect(
-            sockfd,
-            (struct sockaddr *)&server_addr,
-            sizeof(server_addr)
-        ) < 0) {
+    if (connect(sockfd,
+                (struct sockaddr *)&server_addr,
+                sizeof(server_addr)) < 0) {
 
         perror("connect");
         close(sockfd);
         return 1;
     }
 
-    printf("Connected to RemoteOps Agent\n");
-    printf("Agent IP: %s\n", argv[1]);
+    printf("========================================\n");
+    printf("RemoteOps Controller\n");
+    printf("Connected to Agent: %s\n", argv[1]);
     printf("TCP Port: %d\n", PORT);
+    printf("========================================\n");
 
-    const char *message = "HELLO\n";
+    while (1) {
 
-    send(
-        sockfd,
-        message,
-        strlen(message),
-        0
-    );
+        printf("RemoteOps> ");
+        fflush(stdout);
 
-    memset(buffer, 0, sizeof(buffer));
+        if (fgets(send_buffer,
+                  sizeof(send_buffer),
+                  stdin) == NULL) {
+            break;
+        }
 
-    int bytes_received = recv(
-        sockfd,
-        buffer,
-        sizeof(buffer) - 1,
-        0
-    );
+        if (send(sockfd,
+                 send_buffer,
+                 strlen(send_buffer),
+                 0) < 0) {
 
-    if (bytes_received > 0) {
-        buffer[bytes_received] = '\0';
-        printf("Agent response: %s", buffer);
+            perror("send");
+            break;
+        }
+
+        memset(recv_buffer, 0, sizeof(recv_buffer));
+
+        int bytes_received = recv(
+            sockfd,
+            recv_buffer,
+            sizeof(recv_buffer) - 1,
+            0
+        );
+
+        if (bytes_received <= 0) {
+            printf("Agent disconnected.\n");
+            break;
+        }
+
+        recv_buffer[bytes_received] = '\0';
+
+        printf("%s", recv_buffer);
+
+        if (strncmp(send_buffer, "QUIT", 4) == 0) {
+            break;
+        }
     }
 
     close(sockfd);
