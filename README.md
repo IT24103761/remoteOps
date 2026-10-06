@@ -2,6 +2,39 @@
 
 Registration Number: IT24103761
 
+## Build
+make -f Makefile_761
+
+## Run Agent
+./agent_761
+
+## Run Controller
+./controller_761 127.0.0.1
+
+## Personalized Values
+TCP Port: 9410
+SID: 1673
+Authentication Token: OPS-3761
+Log File: remoteops_IT24103761.log
+Storage Path: ./agentfiles/IT24103761/
+
+## Supported Commands
+AUTH OPS-3761
+SYSINFO
+LISTPROC
+EXEC DATE
+EXEC UPTIME
+EXEC DISKFREE
+EXEC HOSTNAME
+EXEC WHOAMI
+PUT <filename>
+GET <filename>
+MONITOR START <udp_port>
+MONITOR STOP
+QUIT# RemoteOps - IE3090 Network Programming
+
+Registration Number: IT24103761
+
 ## Personalised Values
 
 Agent TCP Port: 9410
