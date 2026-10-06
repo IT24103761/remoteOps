@@ -1,4 +1,17 @@
-# RemoteOps Design Diary
+## 6 October 2026 – UDP Periodic Monitoring
+
+Implemented periodic system monitoring using UDP.
+
+After MONITOR START is received, the Agent creates a separate monitoring
+thread and sends SYSINFO datagrams to the Controller's specified UDP port.
+
+For testing, UDP port 10000 was used. Each datagram contains CPU load,
+memory usage, uptime and SID:1673.
+
+The monitoring interval was set to 5 seconds.
+
+MONITOR STOP was tested and successfully stopped the monitoring stream.
+The UDP listener on the Controller was also closed after monitoring stopped.# RemoteOps Design Diary
 
 ## 5 October 2026
 
